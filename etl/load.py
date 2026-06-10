@@ -57,9 +57,20 @@ def load_zones(conn, geojson: dict) -> None:
     conn.commit()
 
 
+# Integer-typed fact columns. The TLC parquet stores these as doubles (to allow
+# NaN), so they would serialize as "1.0" and be rejected by SMALLINT. Cast to
+# pandas nullable Int so they emit "1" and NaN → the COPY NULL marker.
+INT_COLS = [
+    "vendor_id", "passenger_count", "rate_code_id", "payment_type_id",
+    "pu_location_id", "do_location_id", "pickup_hour", "pickup_dow",
+]
+
+
 def copy_chunk(conn, df: pd.DataFrame) -> None:
     """COPY one cleaned+featured chunk into fact_trip."""
-    out = df.rename(columns=RENAME)[FACT_COLS]
+    out = df.rename(columns=RENAME)[FACT_COLS].copy()
+    for col in INT_COLS:
+        out[col] = out[col].astype("Int64")
     buf = io.StringIO()
     out.to_csv(buf, index=False, header=False, na_rep="\\N")
     buf.seek(0)
