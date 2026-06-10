@@ -1,15 +1,16 @@
 """ETL entry point: python -m etl.run_pipeline
 
-Streams the raw CSV in chunks → clean → engineer features → COPY to PostgreSQL.
-Writes data/exclusion_log.csv (sampled excluded rows) and data/etl_summary.json.
+Streams the raw parquet in row-batches → clean → engineer features → COPY to
+PostgreSQL. Writes data/exclusion_log.csv (sampled excluded rows) and
+data/etl_summary.json.
 """
 import json
 import time
 
-import pandas as pd
+import pyarrow.parquet as pq
 
 from . import clean, features, load, zones
-from .config import CHUNK_SIZE, ETL_SUMMARY, EXCLUSION_LOG, TRIPS_CSV
+from .config import CHUNK_SIZE, ETL_SUMMARY, EXCLUSION_LOG, TRIPS_PARQUET
 
 
 def main() -> None:
@@ -24,13 +25,9 @@ def main() -> None:
     n_in = n_out = 0
     first_sample = True
 
-    reader = pd.read_csv(
-        TRIPS_CSV,
-        dtype=clean.DTYPES,
-        parse_dates=clean.PARSE_DATES,
-        chunksize=CHUNK_SIZE,
-    )
-    for i, chunk in enumerate(reader):
+    pf = pq.ParquetFile(TRIPS_PARQUET)
+    for i, batch in enumerate(pf.iter_batches(batch_size=CHUNK_SIZE)):
+        chunk = batch.to_pandas()
         n_in += len(chunk)
         cleaned, counts, samples = clean.clean_chunk(chunk)
         for rule, n in counts.items():

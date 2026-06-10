@@ -9,7 +9,7 @@ load_dotenv()
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 
-TRIPS_CSV = DATA_DIR / "yellow_tripdata_2019-01.csv"
+TRIPS_PARQUET = DATA_DIR / "yellow_tripdata_2019-01.parquet"
 ZONE_LOOKUP_CSV = DATA_DIR / "taxi_zone_lookup.csv"
 ZONES_ZIP = DATA_DIR / "taxi_zones.zip"
 
@@ -21,7 +21,7 @@ DATABASE_URL = os.getenv(
     "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/nyc_taxi"
 )
 
-CHUNK_SIZE = 200_000  # rows per pandas chunk (~7.7M rows total)
+CHUNK_SIZE = 200_000  # rows per batch streamed from parquet (~7.7M rows total)
 
 # ── Cleaning thresholds ───────────────────────────────────────────
 # TODO(team): justify each threshold in the report (§1 assumptions).

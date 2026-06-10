@@ -7,15 +7,8 @@ import pandas as pd
 
 from .config import RULES
 
-DTYPES = {
-    "VendorID": "Int8",
-    "passenger_count": "Int8",
-    "RatecodeID": "Int8",
-    "PULocationID": "Int16",
-    "DOLocationID": "Int16",
-    "payment_type": "Int8",
-}
-PARSE_DATES = ["tpep_pickup_datetime", "tpep_dropoff_datetime"]
+# The TLC parquet already carries proper dtypes and parsed timestamps, so no
+# explicit dtype/parse_dates map is needed (unlike the legacy CSV reader).
 
 
 def clean_chunk(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int], pd.DataFrame]:
