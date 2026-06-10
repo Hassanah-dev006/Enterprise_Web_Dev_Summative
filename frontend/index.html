@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NYC Taxi Explorer — January 2019</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>🚕 NYC Taxi Explorer</h1>
+    <p>Urban mobility patterns · Yellow Taxi · January 2019</p>
+  </header>
+
+  <!-- Filters (assignment: filtering & sorting by time, distance, location, fare) -->
+  <section class="filters" id="filters">
+    <label>From <input type="date" id="f-start" value="2019-01-01" min="2019-01-01" max="2019-01-31" /></label>
+    <label>To <input type="date" id="f-end" value="2019-01-31" min="2019-01-01" max="2019-01-31" /></label>
+    <label>Hour <input type="number" id="f-hour-min" min="0" max="23" placeholder="0" /> –
+                <input type="number" id="f-hour-max" min="0" max="23" placeholder="23" /></label>
+    <label>Borough
+      <select id="f-borough"><option value="">All</option></select>
+    </label>
+    <label>Fare $ <input type="number" id="f-fare-min" placeholder="min" step="1" /> –
+                  <input type="number" id="f-fare-max" placeholder="max" step="1" /></label>
+    <label>Distance mi <input type="number" id="f-dist-min" placeholder="min" step="0.5" /> –
+                       <input type="number" id="f-dist-max" placeholder="max" step="0.5" /></label>
+    <button id="f-apply">Apply</button>
+    <button id="f-reset" class="secondary">Reset</button>
+  </section>
+
+  <!-- KPI cards -->
+  <section class="kpis" id="kpis">
+    <div class="kpi"><span id="kpi-trips">–</span><label>Trips</label></div>
+    <div class="kpi"><span id="kpi-revenue">–</span><label>Revenue</label></div>
+    <div class="kpi"><span id="kpi-fare">–</span><label>Avg fare</label></div>
+    <div class="kpi"><span id="kpi-distance">–</span><label>Avg distance</label></div>
+    <div class="kpi"><span id="kpi-duration">–</span><label>Avg duration</label></div>
+    <div class="kpi"><span id="kpi-tip">–</span><label>Avg tip % (card)</label></div>
+  </section>
+
+  <main class="grid">
+    <section class="card wide">
+      <h2>Demand & speed by hour of day</h2>
+      <canvas id="chart-hourly"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Top pickup zones <small>(custom top-K heap)</small></h2>
+      <select id="zone-metric">
+        <option value="trips">by trip count</option>
+        <option value="total_revenue">by revenue</option>
+        <option value="avg_fare">by avg fare</option>
+        <option value="avg_tip_pct">by avg tip %</option>
+      </select>
+      <canvas id="chart-zones"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Pickup intensity map <small>(zone choropleth)</small></h2>
+      <div id="map"></div>
+    </section>
+
+    <section class="card wide">
+      <h2>Trip browser</h2>
+      <div class="table-controls">
+        <label>Sort by
+          <select id="t-sort">
+            <option value="pickup_ts">pickup time</option>
+            <option value="fare_amount">fare</option>
+            <option value="trip_distance">distance</option>
+            <option value="duration_min">duration</option>
+            <option value="tip_amount">tip</option>
+          </select>
+        </label>
+        <select id="t-order"><option value="desc">↓ desc</option><option value="asc">↑ asc</option></select>
+        <span id="t-info"></span>
+        <button id="t-prev">‹ Prev</button>
+        <button id="t-next">Next ›</button>
+      </div>
+      <table id="trips-table">
+        <thead>
+          <tr><th>Pickup</th><th>From</th><th>To</th><th>Mi</th><th>Min</th>
+              <th>Fare</th><th>Tip</th><th>Total</th><th>Payment</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>Data: NYC TLC Trip Record Data · Built for the fullstack assignment</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
