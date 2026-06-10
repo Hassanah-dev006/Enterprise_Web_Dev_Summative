@@ -1,5 +1,6 @@
-# Data (too large for git)
-data/
+# Data (too large for git) — keep the folder's README, ignore everything else
+data/*
+!data/README.md
 *.csv
 *.parquet
 *.zip

@@ -41,8 +41,8 @@ cp .env.example .env                                 # edit DATABASE_URL if need
 ```
 
 ### 3. Data
-Place the raw files in `data/`:
-- `yellow_tripdata_2019-01.csv`
+Download the raw files into `data/` (see `data/README.md` for links):
+- `yellow_tripdata_2019-01.parquet`
 - `taxi_zone_lookup.csv`
 - `taxi_zones.zip`
 
