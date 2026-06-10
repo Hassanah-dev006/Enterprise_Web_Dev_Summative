@@ -1,0 +1,23 @@
+# Data (too large for git)
+data/
+*.csv
+*.parquet
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Env / secrets
+.env
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Generated artifacts
+frontend/js/zones.geojson
+docs/*.pdf
