@@ -44,7 +44,7 @@ df = drop_and_log (
 
 df = drop_and_log (
     df,
-    df["total amount"] >= 0,
+    df["total_amount"] >= 0,
     rule="non_negative_total_amount",
     reason="Negative total amount = refund/void, not a passenger trip",
 )
@@ -58,14 +58,14 @@ df = drop_and_log (
 
 df = drop_and_log (
     df,
-    df["trip_distance"] > 0 & df["trip_distance"] <= 100,
+    (df["trip_distance"] > 0) & (df["trip_distance"] <= 100),
     rule="reasonable_trip_distance",
     reason="Trip distance is outside the reasonable range",
 )
 
 df = drop_and_log (
     df,
-    df["passenger_count"] >= 1 & df["passenger_count"] <= 6, 
+    (df["passenger_count"] >= 1) & (df["passenger_count"] <= 6), 
     rule="reasonable_passenger_count",
     reason="Passenger count is outside the reasonable range"
 )
@@ -74,18 +74,19 @@ df = drop_and_log (
     df,
     df["RatecodeID"] != 99,
     rule="exclude_unknown_ratecode",
+    reason="RatecodeID of 99 indicates an unknown rate code, which is not a valid passenger trip"
 )
 
 df = drop_and_log (
     df,
-    df["tpep_pickup_datetime"] >= "2019-01-01" & df["tpep_pickup_datetime"] < "2019-02-01",
-    rule="pickup_before_dropoff",
-    reason="Pickup datetime is after dropoff datetime, which is not possible for a passenger trip",
+    (df["tpep_pickup_datetime"] >= "2019-01-01") & (df["tpep_pickup_datetime"] < "2019-02-01"),
+    rule="pickup_within_january_2019",
+    reason="Pickup falls outside the dataset's January 2019 window — out-of-range timestamps are likely data errors, not passenger trips",
 )
 
 df = drop_and_log (
     df,
-    df["tpep_dropoff_datetime"] > df["tpep_pickup_datetime"],
+    (df["tpep_dropoff_datetime"] > df["tpep_pickup_datetime"]),
     rule="dropoff_before_pickup",
     reason="Dropoff datetime is before pickup datetime, which is not possible for a passenger trip",
 )
