@@ -26,7 +26,12 @@ def build_geojson() -> dict:
     with zipfile.ZipFile(ZONES_ZIP) as zf:
         zf.extractall(extract_dir)
 
-    sf = shapefile.Reader(str(extract_dir / "taxi_zones"))
+    # The zip's internal layout varies (flat vs. nested in a subfolder), so
+    # locate the .shp wherever it landed rather than assuming a fixed path.
+    shp_files = list(extract_dir.rglob("*.shp"))
+    if not shp_files:
+        raise FileNotFoundError(f"No .shp found under {extract_dir}")
+    sf = shapefile.Reader(str(shp_files[0].with_suffix("")))
     features = []
     for sr in sf.shapeRecords():
         rec = sr.record.as_dict()
