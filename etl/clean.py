@@ -80,6 +80,15 @@ def clean_chunk(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int], pd.Data
     )
     clean["congestion_surcharge"] = clean["congestion_surcharge"].fillna(0.0)
 
+    # Coerce out-of-spec categorical IDs to NULL so foreign keys to the
+    # dim_* tables always hold (the "unknown member" pattern).
+    for col, valid in (
+        ("VendorID", r["valid_vendor_ids"]),
+        ("RatecodeID", r["valid_rate_codes"]),
+        ("payment_type", r["valid_payment_types"]),
+    ):
+        clean.loc[~clean[col].isin(valid), col] = pd.NA
+
     samples = (
         pd.concat(excluded_samples, ignore_index=True)
         if excluded_samples

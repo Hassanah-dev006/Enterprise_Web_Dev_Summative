@@ -39,4 +39,10 @@ RULES = {
     "min_passengers": 1,
     "max_passengers": 6,
     "valid_location_ids": set(range(1, 264)),  # 1–263 per taxi_zone_lookup
+    # Categorical IDs present in dim_* tables. Real TLC data carries codes
+    # beyond the official spec (VendorID 4, RatecodeID 99); anything outside
+    # these sets is coerced to NULL so the foreign keys hold. See db/schema.sql.
+    "valid_vendor_ids": {1, 2, 4},
+    "valid_rate_codes": {1, 2, 3, 4, 5, 6, 99},
+    "valid_payment_types": {1, 2, 3, 4, 5, 6},
 }

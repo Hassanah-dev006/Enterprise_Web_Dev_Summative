@@ -25,7 +25,8 @@ CREATE TABLE dim_vendor (
 );
 INSERT INTO dim_vendor VALUES
     (1, 'Creative Mobile Technologies'),
-    (2, 'VeriFone Inc.');
+    (2, 'VeriFone Inc.'),
+    (4, 'Other / third-party');   -- undocumented but present in real TLC data
 
 CREATE TABLE dim_rate_code (
     rate_code_id  SMALLINT PRIMARY KEY,
@@ -33,7 +34,8 @@ CREATE TABLE dim_rate_code (
 );
 INSERT INTO dim_rate_code VALUES
     (1, 'Standard rate'), (2, 'JFK'), (3, 'Newark'),
-    (4, 'Nassau or Westchester'), (5, 'Negotiated fare'), (6, 'Group ride');
+    (4, 'Nassau or Westchester'), (5, 'Negotiated fare'), (6, 'Group ride'),
+    (99, 'Unknown');   -- junk code present in real TLC data
 
 CREATE TABLE dim_payment_type (
     payment_type_id  SMALLINT PRIMARY KEY,
