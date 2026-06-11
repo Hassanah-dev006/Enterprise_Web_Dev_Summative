@@ -25,3 +25,4 @@ frontend/js/zones.geojson
 docs/*.pdf
 !docs/report.pdf
 !docs/architecture.pdf
+!docs/system_overview.pdf
