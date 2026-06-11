@@ -311,12 +311,24 @@ def build_pdf(figs):
         "5000 with AirPlay Receiver (the API moved to 5001). Streaming 7.7M rows within "
         "memory limits required batching rather than a single read.", body))
     s.append(Paragraph(
+        "<b>Team challenges.</b> Because the system is a multi-stage pipeline, the "
+        "hardest coordination problem was agreeing on contracts early: the cleaned "
+        "column names and types had to be frozen before database and API work could "
+        "proceed in parallel, so a single change to a cleaning rule rippled into the "
+        "schema and the endpoints. Environment consistency was a recurring friction "
+        "point - Python version and dependency mismatches across machines, a shared "
+        "database that had to be re-seeded after every schema change, and a multi-"
+        "hundred-megabyte raw file that could not live in version control. We split the "
+        "work along the architecture seams (ETL, database/API, frontend/report) and "
+        "relied on small, frequent commits to keep the integration points visible; the "
+        "main lesson was to lock the data contract and schema first, since they are the "
+        "interfaces every other component depends on.", body))
+    s.append(Paragraph(
         "<b>Future work.</b> Extend beyond one month to expose seasonality; adopt "
         "PostGIS for true point-in-polygon spatial joins instead of pre-mapped zone "
         "IDs; add a demand-forecasting model keyed on the hour/zone features; cache hot "
         "aggregates; containerise with Docker for one-command deployment; and add "
-        "trip-level drill-down from the map. <i>(Team reflection: add per-member roles "
-        "and collaboration notes here before submission.)</i>", body))
+        "trip-level drill-down from the map.", body))
 
     doc = SimpleDocTemplate(os.path.join(HERE, "report.pdf"), pagesize=letter,
                             topMargin=0.7 * inch, bottomMargin=0.7 * inch,
