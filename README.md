@@ -58,7 +58,7 @@ The pipeline writes an exclusion log to `data/exclusion_log.csv` and a summary t
 ```bash
 python -m backend.app
 ```
-Open **http://localhost:5000** — the Flask app serves both the API and the dashboard.
+Open **http://localhost:5001** — the Flask app serves both the API and the dashboard.
 
 ## API overview
 

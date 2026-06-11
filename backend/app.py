@@ -1,6 +1,6 @@
 """Flask API + static frontend server.
 
-Run:  python -m backend.app   →  http://localhost:5000
+Run:  python -m backend.app   →  http://localhost:5001
 """
 import os
 
@@ -187,4 +187,5 @@ def exclusions():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=int(os.getenv("FLASK_PORT", 5000)))
+    # Default 5001: on macOS, AirPlay Receiver occupies port 5000.
+    app.run(host="127.0.0.1", debug=True, port=int(os.getenv("FLASK_PORT", 5001)))
