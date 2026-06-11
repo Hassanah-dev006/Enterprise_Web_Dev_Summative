@@ -21,4 +21,6 @@ venv/
 
 # Generated artifacts
 frontend/js/zones.geojson
+# keep the submission report (docs/report.pdf) but ignore other generated PDFs
 docs/*.pdf
+!docs/report.pdf
