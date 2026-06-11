@@ -1,0 +1,12 @@
+# Keep the image small and let runtime volumes/env provide these
+.git
+.venv
+venv
+__pycache__
+**/__pycache__
+*.pyc
+.env
+data
+docs/assets
+docs/arch_assets
+frontend/js/zones.geojson

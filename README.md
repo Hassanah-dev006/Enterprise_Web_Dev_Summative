@@ -24,10 +24,31 @@ Fullstack dashboard for exploring urban mobility patterns in the NYC Yellow Taxi
 │   ├── db.py              # Connection helper
 │   └── algorithms/        # Hand-written quicksort + top-K min-heap (no libraries)
 ├── frontend/              # Dashboard (HTML/CSS/JS, Chart.js, Leaflet)
-└── docs/                  # Technical report
+├── docs/                  # Technical report, architecture docs, build scripts
+├── Dockerfile             # App/ETL image
+├── docker-compose.yml     # Postgres + ETL + web (one-command deploy)
+└── docker/                # ETL entrypoint
 ```
 
-## Setup
+## Quick start with Docker (recommended)
+
+If you have Docker installed, the whole stack — PostgreSQL, the ETL load, and the
+Flask app (served by gunicorn) — comes up with one command. First place the three
+raw files in `data/` (see `data/README.md`), then:
+
+```bash
+docker compose up --build
+```
+
+This starts Postgres, runs the ETL once to load ~7.3M rows (a few minutes on the
+first run), then serves the dashboard at **http://localhost:5001**. The database
+persists in a named volume, so subsequent `docker compose up` runs skip the load
+and start instantly. Stop with `Ctrl+C`; remove everything with
+`docker compose down -v`.
+
+For a manual (non-Docker) setup, follow the steps below.
+
+## Manual setup
 
 ### 1. Prerequisites
 - Python 3.10+

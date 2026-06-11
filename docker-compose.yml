@@ -1,0 +1,47 @@
+# Full-stack deployment: Postgres + one-shot ETL + Flask (gunicorn).
+# Usage:  docker compose up --build   ->  http://localhost:5001
+# Requires the three raw files in ./data (see data/README.md).
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: nyc_taxi
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nyc_taxi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  etl:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/nyc_taxi
+    volumes:
+      - ./data:/app/data            # raw inputs + generated logs
+      - frontend_js:/app/frontend/js # shares generated zones.geojson with web
+    command: ["sh", "docker/entrypoint-etl.sh"]
+
+  web:
+    build: .
+    depends_on:
+      etl:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/nyc_taxi
+    volumes:
+      - frontend_js:/app/frontend/js
+    ports:
+      - "5001:5001"
+    command: ["gunicorn", "-b", "0.0.0.0:5001", "-w", "2", "backend.app:app"]
+
+volumes:
+  pgdata:
+  frontend_js:
