@@ -29,3 +29,54 @@ Fullstack dashboard for exploring urban mobility patterns in the NYC Yellow Taxi
 ├── docker-compose.yml     # Postgres + ETL + web (one-command deploy)
 └── docker/                # ETL entrypoint
 ```
+
+## Quick start with Docker (recommended)
+
+If you have Docker installed, the whole stack — PostgreSQL, the ETL load, and the
+Flask app (served by gunicorn) — comes up with one command. First place the three
+raw files in `data/` (see `data/README.md`), then:
+
+```bash
+docker compose up --build
+```
+
+This starts Postgres, runs the ETL once to load ~7.3M rows (a few minutes on the
+first run), then serves the dashboard at **http://localhost:5001**. The database
+persists in a named volume, so subsequent `docker compose up` runs skip the load
+and start instantly. Stop with `Ctrl+C`; remove everything with
+`docker compose down -v`.
+
+For a manual (non-Docker) setup, follow the steps below.
+
+## Manual setup
+
+### 1. Prerequisites
+- Python 3.10+
+- PostgreSQL 14+ running locally
+
+### 2. Install
+```bash
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env                                 # edit DATABASE_URL if needed
+```
+
+### 3. Data
+Download the raw files into `data/` (see `data/README.md` for links):
+- `yellow_tripdata_2019-01.parquet`
+- `taxi_zone_lookup.csv`
+- `taxi_zones.zip`
+
+### 4. Create database and run ETL
+```bash
+createdb nyc_taxi
+psql -d nyc_taxi -f db/schema.sql
+python -m etl.run_pipeline        # cleans, engineers features, loads DB (~7.7M rows)
+```
+The pipeline writes an exclusion log to `data/exclusion_log.csv` and a summary to `data/etl_summary.json`.
+
+### 5. Launch
+```bash
+python -m backend.app
+```
+Open **http://localhost:5001** — the Flask app serves both the API and the dashboard.
