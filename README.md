@@ -80,3 +80,14 @@ The pipeline writes an exclusion log to `data/exclusion_log.csv` and a summary t
 python -m backend.app
 ```
 Open **http://localhost:5001** — the Flask app serves both the API and the dashboard.
+
+## API overview
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/health` | Liveness + row count |
+| `GET /api/zones` | Zone lookup + GeoJSON boundaries |
+| `GET /api/trips` | Paginated trips; filters: date, hour, borough, fare, distance; sortable |
+| `GET /api/stats/summary` | KPI totals (trips, revenue, avg distance/fare/tip) |
+| `GET /api/stats/hourly` | Trips/avg fare by hour of day |
+| `GET /api/stats/top-zones?k=10` | Busiest zones — ranked with **custom top-K heap** |
