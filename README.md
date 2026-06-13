@@ -99,3 +99,11 @@ Open **http://localhost:5001** — the Flask app serves both the API and the das
 - **Quicksort** — median-of-three, in-place; sorts API results in O(n log n) average
 
 See `docs/report.md` §3 for pseudo-code and complexity analysis.
+
+## Team
+
+| name | Role |
+|---|---|
+| Hassanat Belo | _add_ |
+Panom Kot | 
+Pegdwende Savadogo
