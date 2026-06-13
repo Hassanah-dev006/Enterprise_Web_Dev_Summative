@@ -91,3 +91,11 @@ Open **http://localhost:5001** — the Flask app serves both the API and the das
 | `GET /api/stats/summary` | KPI totals (trips, revenue, avg distance/fare/tip) |
 | `GET /api/stats/hourly` | Trips/avg fare by hour of day |
 | `GET /api/stats/top-zones?k=10` | Busiest zones — ranked with **custom top-K heap** |
+
+## Custom algorithm (assignment §3)
+
+`backend/algorithms/` contains hand-written implementations used by live endpoints (no `heapq`, `Counter`, or `sort_values`):
+- **Top-K min-heap** — selects the K busiest zones in O(n log k)
+- **Quicksort** — median-of-three, in-place; sorts API results in O(n log n) average
+
+See `docs/report.md` §3 for pseudo-code and complexity analysis.
