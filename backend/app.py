@@ -97,3 +97,60 @@ def trips():
     )
     total = db.query(f"SELECT count(*) AS n FROM fact_trip t {where}", params)[0]["n"]
     return jsonify({"page": page, "per_page": per_page, "total": total, "rows": rows})
+
+
+@app.route("/api/stats/summary")
+def summary():
+    where, params = _trip_filters()
+    row = db.query(
+        f"""SELECT count(*) AS trips,
+                   round(sum(total_amount), 2) AS total_revenue,
+                   round(avg(trip_distance)::numeric, 2) AS avg_distance,
+                   round(avg(fare_amount)::numeric, 2) AS avg_fare,
+                   round(avg(duration_min)::numeric, 1) AS avg_duration_min,
+                   round(avg(tip_pct)::numeric, 1) AS avg_tip_pct
+            FROM fact_trip t {where}""",
+        params,
+    )[0]
+    return jsonify(row)
+
+
+@app.route("/api/stats/hourly")
+def hourly():
+    where, params = _trip_filters()
+    rows = db.query(
+        f"""SELECT pickup_hour AS hour, count(*) AS trips,
+                   round(avg(fare_amount)::numeric, 2) AS avg_fare,
+                   round(avg(avg_speed_mph)::numeric, 1) AS avg_speed_mph
+            FROM fact_trip t {where}
+            GROUP BY pickup_hour ORDER BY pickup_hour""",
+        params,
+    )
+    return jsonify(rows)
+
+
+@app.route("/api/stats/top-zones")
+def top_zones():
+    """K busiest pickup zones — ranked with the CUSTOM top-K min-heap
+    (backend/algorithms/topk_heap.py), not SQL ORDER BY/LIMIT."""
+    k = min(50, int(request.args.get("k", 10)))
+    metric = request.args.get("metric", "trips")
+    if metric not in ZONE_METRICS:
+        return jsonify({"error": f"metric must be one of {sorted(ZONE_METRICS)}"}), 400
+    where, params = _trip_filters()
+
+    zones = db.query(
+        f"""SELECT z.location_id, z.zone_name, z.borough,
+                   count(*) AS trips,
+                   round(sum(t.total_amount), 2) AS total_revenue,
+                   round(avg(t.fare_amount)::numeric, 2) AS avg_fare,
+                   round(avg(t.trip_distance)::numeric, 2) AS avg_distance,
+                   round(avg(t.tip_pct)::numeric, 1) AS avg_tip_pct
+            FROM fact_trip t JOIN dim_zone z ON z.location_id = t.pu_location_id
+            {where}
+            GROUP BY z.location_id, z.zone_name, z.borough""",
+        params,
+    )
+    ranked = top_k(zones, k, key=lambda z: float(z[metric] or 0))
+    return jsonify(ranked)
+
