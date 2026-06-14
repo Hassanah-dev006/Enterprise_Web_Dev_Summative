@@ -154,3 +154,38 @@ def top_zones():
     ranked = top_k(zones, k, key=lambda z: float(z[metric] or 0))
     return jsonify(ranked)
 
+
+@app.route("/api/stats/zone-ranking")
+def zone_ranking():
+    """All 263 zones sorted by a metric — uses the CUSTOM quicksort.
+    Feeds the choropleth map."""
+    metric = request.args.get("metric", "trips")
+    if metric not in ZONE_METRICS:
+        return jsonify({"error": f"metric must be one of {sorted(ZONE_METRICS)}"}), 400
+    where, params = _trip_filters()
+
+    zones = db.query(
+        f"""SELECT z.location_id, z.zone_name, z.borough,
+                   count(*) AS trips,
+                   round(sum(t.total_amount), 2) AS total_revenue,
+                   round(avg(t.fare_amount)::numeric, 2) AS avg_fare,
+                   round(avg(t.trip_distance)::numeric, 2) AS avg_distance,
+                   round(avg(t.tip_pct)::numeric, 1) AS avg_tip_pct
+            FROM fact_trip t JOIN dim_zone z ON z.location_id = t.pu_location_id
+            {where}
+            GROUP BY z.location_id, z.zone_name, z.borough""",
+        params,
+    )
+    quicksort(zones, key=lambda z: float(z[metric] or 0), reverse=True)
+    return jsonify(zones)
+
+
+@app.route("/api/stats/exclusions")
+def exclusions():
+    """ETL transparency: what was excluded and why."""
+    return jsonify(db.query("SELECT * FROM etl_exclusion_summary ORDER BY n_excluded DESC"))
+
+
+if __name__ == "__main__":
+    # Default 5001: on macOS, AirPlay Receiver occupies port 5000.
+    app.run(host="127.0.0.1", debug=True, port=int(os.getenv("FLASK_PORT", 5001)))
