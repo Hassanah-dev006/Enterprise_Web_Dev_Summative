@@ -84,3 +84,29 @@ const App = {
     Charts.renderZones(top, metric);
     ZoneMap.render(ranking, metric);
   },
+
+  async refreshTrips() {
+    const sort = document.getElementById("t-sort").value;
+    const order = document.getElementById("t-order").value;
+    const data = await API.trips(this.page, sort, order);
+
+    const tbody = document.querySelector("#trips-table tbody");
+    tbody.innerHTML = "";
+    for (const r of data.rows) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${new Date(r.pickup_ts).toLocaleString()}</td>
+        <td>${r.pu_zone}</td><td>${r.do_zone}</td>
+        <td>${r.trip_distance}</td><td>${Math.round(r.duration_min)}</td>
+        <td>$${r.fare_amount}</td><td>$${r.tip_amount}</td>
+        <td>$${r.total_amount}</td><td>${r.payment ?? ""}</td>`;
+      tbody.appendChild(tr);
+    }
+    const pages = Math.max(1, Math.ceil(data.total / data.per_page));
+    this.page = Math.min(this.page, pages);
+    document.getElementById("t-info").textContent =
+      `${data.total.toLocaleString()} trips · page ${data.page}/${pages.toLocaleString()}`;
+  },
+};
+
+document.addEventListener("DOMContentLoaded", () => App.init());
