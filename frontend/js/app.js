@@ -52,3 +52,35 @@ const App = {
     const sel = document.getElementById("f-borough");
     boroughs.forEach((b) => sel.add(new Option(b, b)));
   },
+
+  async refreshAll() {
+    this.refreshSummary();
+    this.refreshHourly();
+    this.refreshZones();
+    this.refreshTrips();
+  },
+
+  async refreshSummary() {
+    const s = await API.summary();
+    const fmt = (n) => Number(n).toLocaleString();
+    document.getElementById("kpi-trips").textContent = fmt(s.trips);
+    document.getElementById("kpi-revenue").textContent = `$${fmt(Math.round(s.total_revenue || 0))}`;
+    document.getElementById("kpi-fare").textContent = `$${s.avg_fare ?? "–"}`;
+    document.getElementById("kpi-distance").textContent = `${s.avg_distance ?? "–"} mi`;
+    document.getElementById("kpi-duration").textContent = `${s.avg_duration_min ?? "–"} min`;
+    document.getElementById("kpi-tip").textContent = `${s.avg_tip_pct ?? "–"}%`;
+  },
+
+  async refreshHourly() {
+    Charts.renderHourly(await API.hourly());
+  },
+
+  async refreshZones() {
+    const metric = document.getElementById("zone-metric").value;
+    const [top, ranking] = await Promise.all([
+      API.topZones(metric, 10),
+      API.zoneRanking(metric),
+    ]);
+    Charts.renderZones(top, metric);
+    ZoneMap.render(ranking, metric);
+  },
