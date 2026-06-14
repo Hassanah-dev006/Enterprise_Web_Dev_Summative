@@ -69,3 +69,31 @@ def _trip_filters():
         clauses.append("trip_distance <= %s"); params.append(float(f["dist_max"]))
     where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
     return where, params
+
+
+@app.route("/api/trips")
+def trips():
+    """Paginated trip browser with filtering and sorting."""
+    sort = request.args.get("sort", "pickup_ts")
+    if sort not in SORTABLE:
+        return jsonify({"error": f"sort must be one of {sorted(SORTABLE)}"}), 400
+    order = "DESC" if request.args.get("order", "desc").lower() == "desc" else "ASC"
+    page = max(1, int(request.args.get("page", 1)))
+    per_page = min(200, int(request.args.get("per_page", 50)))
+    where, params = _trip_filters()
+
+    rows = db.query(
+        f"""SELECT t.trip_id, t.pickup_ts, t.dropoff_ts, zp.zone_name AS pu_zone,
+                   zd.zone_name AS do_zone, t.trip_distance, t.duration_min,
+                   t.fare_amount, t.tip_amount, t.total_amount, p.description AS payment
+            FROM fact_trip t
+            JOIN dim_zone zp ON zp.location_id = t.pu_location_id
+            JOIN dim_zone zd ON zd.location_id = t.do_location_id
+            LEFT JOIN dim_payment_type p ON p.payment_type_id = t.payment_type_id
+            {where}
+            ORDER BY t.{sort} {order}
+            LIMIT %s OFFSET %s""",
+        params + [per_page, (page - 1) * per_page],
+    )
+    total = db.query(f"SELECT count(*) AS n FROM fact_trip t {where}", params)[0]["n"]
+    return jsonify({"page": page, "per_page": per_page, "total": total, "rows": rows})
