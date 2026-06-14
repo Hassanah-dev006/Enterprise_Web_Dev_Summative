@@ -43,3 +43,29 @@ def zones():
     )
     return jsonify(rows)
 
+
+def _trip_filters():
+    """Shared WHERE clause from query-string filters."""
+    clauses, params = [], []
+    f = request.args
+    if f.get("start"):
+        clauses.append("pickup_ts >= %s"); params.append(f["start"])
+    if f.get("end"):
+        clauses.append("pickup_ts < %s"); params.append(f["end"])
+    if f.get("hour_min"):
+        clauses.append("pickup_hour >= %s"); params.append(int(f["hour_min"]))
+    if f.get("hour_max"):
+        clauses.append("pickup_hour <= %s"); params.append(int(f["hour_max"]))
+    if f.get("borough"):
+        clauses.append("pu_location_id IN (SELECT location_id FROM dim_zone WHERE borough = %s)")
+        params.append(f["borough"])
+    if f.get("fare_min"):
+        clauses.append("fare_amount >= %s"); params.append(float(f["fare_min"]))
+    if f.get("fare_max"):
+        clauses.append("fare_amount <= %s"); params.append(float(f["fare_max"]))
+    if f.get("dist_min"):
+        clauses.append("trip_distance >= %s"); params.append(float(f["dist_min"]))
+    if f.get("dist_max"):
+        clauses.append("trip_distance <= %s"); params.append(float(f["dist_max"]))
+    where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+    return where, params
