@@ -96,3 +96,32 @@ whenever K ≪ n (here 10 of 263).
 orders all 263 zones to colour the map. An in-place quicksort picks the pivot as
 the median of first/middle/last and recurses into the smaller partition first to
 bound stack depth.
+
+```
+quicksort(A, lo, hi):
+    while lo < hi:
+        p = partition(A, lo, hi)        # median-of-three pivot
+        if p-lo < hi-p: quicksort(A, lo, p-1); lo = p+1
+        else:           quicksort(A, p+1, hi); hi = p-1
+```
+
+*Complexity:* time **O(n log n)** average, **O(n²)** worst case (made unlikely by
+the median-of-three pivot on real, partially-ordered fare/zone data); space
+**O(log n)** for the recursion stack. Both structures were validated against
+Python's built-ins over 200 randomized trials.
+
+## 4. Insights and Interpretation
+
+### Insight 1 — Congestion is written into the hourly curve
+
+![Hourly demand vs speed](assets/fig1_demand_speed.png)
+
+Derived from a `GROUP BY pickup_hour` over the engineered `avg_speed_mph`
+feature. Demand peaks at 6 PM (**490,085** trips) precisely when average speed
+bottoms out near **10.4 mph**; the 5 AM lull moves at **19.0 mph** — nearly
+double. The inverse relationship is a clean congestion signature: more taxis on
+the road coincide with slower roads. Notably fares do not spike at peak demand,
+because the meter charges for time-in-traffic regardless, so congestion is paid
+in minutes rather than surge pricing.
+
+### Insight 2 — Two airports are the revenue engine
