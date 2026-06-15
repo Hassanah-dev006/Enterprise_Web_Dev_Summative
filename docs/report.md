@@ -77,7 +77,7 @@ Two structures are implemented by hand (no `heapq`, `Counter`, `sorted`, or
 
 **3.1 Top-K min-heap** — powers `/api/stats/top-zones`. To rank the K busiest
 zones out of 263 without sorting everything, we keep a binary min-heap of size K;
-each candidate that beats the heap's minimum replaces the root and sifts down.
+each candidate that beats the heap's minimum replaces the root and sifts down
 
 ```
 build empty min-heap H            # ordered by metric
@@ -177,7 +177,7 @@ that could not live in version control. We split the work along the architecture
 seams (ETL, database/API, frontend/report) and relied on small, frequent commits
 to keep the integration points visible; the main lesson was to lock the data
 contract and schema first, since they are the interfaces every other component
-depends on.
+depends on
 
 **Future work.** Extend beyond one month to expose seasonality; adopt PostGIS
 for true point-in-polygon spatial joins instead of pre-mapped zone IDs; add a
