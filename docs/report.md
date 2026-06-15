@@ -1,4 +1,4 @@
-#NYC YELLOW TAXI EXPLORER - TECHNICAL REPORT
+#NYC Yellow Taxi Explorer - TECHNICAL REPORT
 
 **January 2019 . 7.31M cleaned trips**
 > This is the readable source of the report. The submission PDF is
