@@ -125,3 +125,65 @@ because the meter charges for time-in-traffic regardless, so congestion is paid
 in minutes rather than surge pricing.
 
 ### Insight 2 — Two airports are the revenue engine
+
+![Top zones by revenue](assets/fig2_airport_revenue.png)
+
+JFK (**\$10.2M**) and LaGuardia (**\$7.2M**) are the top two revenue zones yet
+appear nowhere in the top ten by *trip count* — they convert volume into value
+through long, flat-rate fares (JFK averages **\$45.92** per trip vs. the
+**\$12.19** city-wide mean). At borough level the same effect dominates: Queens'
+average fare (**\$35.07**) is over 3× Manhattan's (**\$10.59**). For an operator,
+airport supply is disproportionately valuable, and demand modelling should treat
+airport zones as a separate regime.
+
+### Insight 3 — "Average tip" really means "average card tip"
+
+![Payment mix](assets/fig3_payment_tip.png)
+
+Credit-card trips tip **21.6%** on average, but the **2.01M** cash trips (28% of
+the total) record no tip at all — the meter only captures card tips. Any naive
+average over all trips silently measures card users only. This also explains odd
+borough numbers: the Bronx's 2.1% "tip rate" reflects a high cash share, not
+stinginess. The design lesson — surfaced in our feature engineering — is that
+`tip_pct` is only meaningful conditioned on `payment_type = card`, and the
+dashboard labels it accordingly.
+
+| Borough | Trips | Avg fare | Avg card tip |
+|---|---:|---:|---:|
+| Manhattan | 6,766,044 | \$10.59 | 21.9% |
+| Queens | 436,148 | \$35.07 | 20.6% |
+| Brooklyn | 86,830 | \$18.88 | 14.1% |
+| Bronx | 16,559 | \$27.18 | 2.1% |
+| Staten Island | 290 | \$46.50 | 5.5% |
+| EWR | 23 | \$63.63 | 56.7% |
+
+## 5. Reflection and Future Work
+
+**Technical challenges.** Real-world friction dominated: the TLC parquet stores
+integer IDs as floats (forcing a nullable-int cast before COPY), undocumented
+VendorID 4 / RatecodeID 99 broke foreign keys until the dimensions and a
+coercion step were added, and macOS quietly occupies port 5000 with AirPlay
+Receiver (the API moved to 5001). Streaming 7.7M rows within memory limits
+required batching rather than a single read.
+
+**Team challenges.** Because the system is a multi-stage pipeline, the hardest
+coordination problem was agreeing on contracts early: the cleaned column names
+and types had to be frozen before database and API work could proceed in
+parallel, so a single change to a cleaning rule rippled into the schema and the
+endpoints. Environment consistency was a recurring friction point — Python
+version and dependency mismatches across machines, a shared database that had to
+be re-seeded after every schema change, and a multi-hundred-megabyte raw file
+that could not live in version control. We split the work along the architecture
+seams (ETL, database/API, frontend/report) and relied on small, frequent commits
+to keep the integration points visible; the main lesson was to lock the data
+contract and schema first, since they are the interfaces every other component
+depends on.
+
+**Future work.** Extend beyond one month to expose seasonality; adopt PostGIS
+for true point-in-polygon spatial joins instead of pre-mapped zone IDs; add a
+demand-forecasting model keyed on the hour/zone features; cache hot aggregates;
+containerise with Docker for one-command deployment; and add trip-level
+drill-down from the map.
+
+> _Tip: per-member names and roles go in the team participation sheet; the
+> paragraph above can be personalised to your team's actual experience._
