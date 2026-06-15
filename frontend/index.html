@@ -44,8 +44,65 @@
     <div class="kpi"><span id="kpi-tip">–</span><label>Avg tip % (card)</label></div>
   </section>
 
-  <main>
+  <main class="grid">
+    <section class="card wide">
+      <h2>Demand & speed by hour of day</h2>
+      <canvas id="chart-hourly"></canvas>
+    </section>
 
+    <section class="card">
+      <h2>Top pickup zones <small>(custom top-K heap)</small></h2>
+      <select id="zone-metric">
+        <option value="trips">by trip count</option>
+        <option value="total_revenue">by revenue</option>
+        <option value="avg_fare">by avg fare</option>
+        <option value="avg_tip_pct">by avg tip %</option>
+      </select>
+      <canvas id="chart-zones"></canvas>
+    </section>
+
+    <section class="card">
+      <h2>Pickup intensity map <small>(zone choropleth)</small></h2>
+      <div id="map"></div>
+    </section>
+
+    <section class="card wide">
+      <h2>Trip browser</h2>
+      <div class="table-controls">
+        <label>Sort by
+          <select id="t-sort">
+            <option value="pickup_ts">pickup time</option>
+            <option value="fare_amount">fare</option>
+            <option value="trip_distance">distance</option>
+            <option value="duration_min">duration</option>
+            <option value="tip_amount">tip</option>
+          </select>
+        </label>
+        <select id="t-order">
+          <option value="desc">↓ desc</option>
+          <option value="asc">↑ asc</option>
+        </select>
+        <span id="t-info"></span>
+        <button id="t-prev">‹ Prev</button>
+        <button id="t-next">Next ›</button>
+      </div>
+      <table id="trips-table">
+        <thead>
+          <tr>
+            <th>Pickup</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Mi</th>
+            <th>Min</th>
+            <th>Fare</th>
+            <th>Tip</th>
+            <th>Total</th>
+            <th>Payment</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
   </main>
 
   <footer>
