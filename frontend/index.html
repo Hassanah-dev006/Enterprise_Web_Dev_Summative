@@ -15,6 +15,27 @@
     <p>Urban mobility patterns . Yellow Taxi . January 2019</p>
   </header>
 
+  <!-- Filters (assignment: filtering & sorting by time, distance, location, fare) -->
+  <section class="filters" id="filters">
+    <label>From <input type="date" id="f-start" value="2019-01-01" min="2019-01-01" max="2019-01-31" /></label>
+    <label>To <input type="date" id="f-end" value="2019-01-31" min="2019-01-01" max="2019-01-31" /></label>
+    <label>Hour <input type="number" id="f-hour-min" min="0" max="23" placeholder="0" /> –
+      <input type="number" id="f-hour-max" min="0" max="23" placeholder="23" /></label>
+    <label>Borough
+      <select id="f-borough">
+        <option value="">All</option>
+      </select>
+    </label>
+    <label>Fare $ <input type="number" id="f-fare-min" placeholder="min" step="1" /> –
+      <input type="number" id="f-fare-max" placeholder="max" step="1" /></label>
+    <label>Distance mi <input type="number" id="f-dist-min" placeholder="min" step="0.5" /> –
+      <input type="number" id="f-dist-max" placeholder="max" step="0.5" /></label>
+    <button id="f-apply">Apply</button>
+    <button id="f-reset" class="secondary">Reset</button>
+  </section>
+
+
+
   <footer>
     <p>Data: NYC TLC Trip Record Data · Built for the fullstack assignment</p>
   </footer>
