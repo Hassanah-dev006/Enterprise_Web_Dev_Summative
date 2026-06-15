@@ -1,15 +1,6 @@
-"""Data integrity: missing values, duplicates, physical/logical outliers.
-
-Each rule tags rows with a reason; excluded rows are counted and sampled
-into the exclusion log (assignment: Transparency requirement).
-"""
 import pandas as pd
 
 from .config import RULES
-
-# The TLC parquet already carries proper dtypes and parsed timestamps, so no
-# explicit dtype/parse_dates map is needed (unlike the legacy CSV reader).
-
 
 def clean_chunk(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int], pd.DataFrame]:
     """Apply all integrity rules to one chunk.
@@ -69,8 +60,6 @@ def clean_chunk(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int], pd.Data
         | (df["passenger_count"] > r["max_passengers"]),
         "implausible_passenger_count",
     )
-    # TODO(team): consider further rules — e.g. negative surcharges,
-    # RatecodeID 99, tip > fare on cash trips. Discuss in report.
 
     clean = df.loc[~bad].copy()
 
@@ -80,8 +69,7 @@ def clean_chunk(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int], pd.Data
     )
     clean["congestion_surcharge"] = clean["congestion_surcharge"].fillna(0.0)
 
-    # Coerce out-of-spec categorical IDs to NULL so foreign keys to the
-    # dim_* tables always hold (the "unknown member" pattern).
+    
     for col, valid in (
         ("VendorID", r["valid_vendor_ids"]),
         ("RatecodeID", r["valid_rate_codes"]),
