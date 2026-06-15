@@ -70,3 +70,29 @@ over per-row INSERT trades flexibility for a ~50× load speedup; coercing unknow
 categorical IDs to NULL trades completeness for guaranteed integrity; and
 excluding 5% of rows trades coverage for a clean, defensible analytic base.
 
+## 3. Algorithmic Logic and Data Structures
+
+Two structures are implemented by hand (no `heapq`, `Counter`, `sorted`, or
+`sort_values`) and both run inside live API endpoints.
+
+**3.1 Top-K min-heap** — powers `/api/stats/top-zones`. To rank the K busiest
+zones out of 263 without sorting everything, we keep a binary min-heap of size K;
+each candidate that beats the heap's minimum replaces the root and sifts down.
+
+```
+build empty min-heap H            # ordered by metric
+for each zone z in zones:
+    if size(H) < K:  push(H, z)
+    elif metric(z) > metric(peek(H)):
+        replace_root(H, z); sift_down(H, 0)
+return drain(H) reversed           # K items, descending
+```
+
+*Complexity:* time **O(n log K)** — n items, each heap op O(log K); space
+**O(K)**. A full sort would be O(n log n) time and O(n) space, so the heap wins
+whenever K ≪ n (here 10 of 263).
+
+**3.2 Quicksort (median-of-three)** — powers `/api/stats/zone-ranking`, which
+orders all 263 zones to colour the map. An in-place quicksort picks the pivot as
+the median of first/middle/last and recurses into the smaller partition first to
+bound stack depth.
