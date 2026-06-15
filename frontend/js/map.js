@@ -13,7 +13,7 @@ const ZoneMap = {
     if (res.ok) this.geojson = await res.json();
   },
 
-  /** Color zones by metric value (quantile-ish linear scale). */
+   /** Color zones by metric value (quantile-ish linear scale). */
   render(ranking, metric) {
     if (!this.geojson) return;
     const byId = Object.fromEntries(ranking.map((z) => [z.location_id, z]));

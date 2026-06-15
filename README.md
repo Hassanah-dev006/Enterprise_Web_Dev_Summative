@@ -102,6 +102,8 @@ See `docs/report.md` §3 for pseudo-code and complexity analysis.
 
 ## Team
 
-| Name | Role |
+| name | Role |
 |---|---|
-| _add_ | _add_ |
+| Hassanat Belo | Data Processing and Cleaning (Backend) |
+Panom Kot | Frontend Dashboard Development|
+Pegdwende Savadogo | Database Design and Implementation|
