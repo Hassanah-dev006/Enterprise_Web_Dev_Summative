@@ -4,7 +4,7 @@ Fullstack dashboard for exploring urban mobility patterns in the NYC Yellow Taxi
 
 **Stack:** Python ETL → PostgreSQL → Flask API → vanilla JS dashboard (Chart.js + Leaflet)
 
-> 📹 **Video walkthrough:** _[add link here]_
+> 📹 **Video walkthrough:** https://www.youtube.com/watch?v=cTUwrb5tE2s
 
 ## Project structure
 
@@ -102,8 +102,8 @@ See `docs/report.md` §3 for pseudo-code and complexity analysis.
 
 ## Team
 
-| name | Role |
+| Name | Role |
 |---|---|
 | Hassanat Bello | Data Processing and Cleaning (Backend) |
-Panom Kot | Frontend Dashboard Development|
-Pegdwende Savadogo | Database Design and Implementation|
+| Panom Kot | Frontend Dashboard Development |
+| Pegdwende Savadogo | Database Design and Implementation |
