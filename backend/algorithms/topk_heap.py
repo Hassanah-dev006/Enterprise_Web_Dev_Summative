@@ -1,19 +1,3 @@
-"""Top-K selection with a hand-written binary min-heap (no heapq).
-
-Problem: rank the K busiest taxi zones out of 263 (or K most expensive trips
-out of millions) without sorting the entire collection.
-
-Approach: keep a min-heap of size K. For each item, if it beats the heap's
-minimum (root), replace the root and sift down. After one pass, the heap
-holds the K largest items.
-
-Complexity:
-  time  O(n log k)  — n items, each heap op costs log k
-  space O(k)        — only the heap is stored
-(Full sort would be O(n log n) time, O(n) space — worse when k << n.)
-"""
-
-
 class MinHeap:
     """Array-backed binary min-heap ordered by `key(item)`."""
 
