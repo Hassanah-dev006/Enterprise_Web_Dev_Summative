@@ -1,7 +1,3 @@
--- NYC Taxi — normalized relational schema (PostgreSQL)
--- Star schema: small dimension tables + one fact table, indexed for the
--- dashboard's filter patterns (time, location, fare, distance).
-
 DROP TABLE IF EXISTS fact_trip CASCADE;
 DROP TABLE IF EXISTS dim_zone CASCADE;
 DROP TABLE IF EXISTS dim_vendor CASCADE;

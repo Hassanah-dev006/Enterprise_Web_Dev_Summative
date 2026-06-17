@@ -1,11 +1,3 @@
-"""Feature engineering — derived features (assignment requires ≥3, justified).
-
-1. duration_min   — trip duration; base unit for speed & congestion analysis.
-2. avg_speed_mph  — distance/duration; proxy for road congestion by hour/zone.
-3. fare_per_mile  — economic efficiency of a trip; exposes flat-rate routes.
-4. tip_pct        — tipping behaviour (card payments only; cash tips unrecorded).
-5. pickup_hour / pickup_dow / is_weekend — temporal keys for demand patterns.
-"""
 import numpy as np
 import pandas as pd
 
